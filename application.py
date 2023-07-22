@@ -34,7 +34,7 @@ def analyze_token_sentiment(docx):
 def main():
     st.title("Sentiment Analysis NLP App")
     
-    logo_image = Image.open(r"C:\Users\ayael\Desktop\sentimentanalysislogo.png") 
+    logo_image = Image.open("sentimentanalysislogo.png") 
     st.image(logo_image, use_column_width=True)
     
     st.empty()
