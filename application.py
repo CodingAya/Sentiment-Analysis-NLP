@@ -11,7 +11,15 @@ sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncas
 
 # Fxn
 def convert_to_df(sentiment):
-    sentiment_dict = {'metric': ['polarity', 'subjectivity'], 'value': [sentiment.polarity, sentiment.subjectivity]}
+#   sentiment_dict = {'metric': ['polarity', 'subjectivity'], 'value': [sentiment.polarity, sentiment.subjectivity]}
+    sentiment_dict = {'metric': [], 'value': []}
+    for item in sentiment:
+        label = item['label'].lower()
+        score = item['score']
+        sentiment_dict['metric'].append(label)
+        sentiment_dict['value'].append(score)
+
+###########
     sentiment_df = pd.DataFrame(sentiment_dict)
     return sentiment_df
 
@@ -22,11 +30,11 @@ def analyze_token_sentiment(docx):
 
     for result in results:
         if result['label'] == 'POSITIVE' and result['score'] > 0.1:
-            sentiment_dict['positives'].append((result['word'], result['score']))
+            sentiment_dict['positives'].append((result['label']))
         elif result['label'] == 'NEGATIVE' and result['score'] > 0.1:
-            sentiment_dict['negatives'].append((result['word'], result['score']))
+            sentiment_dict['negatives'].append((result['label']))
         else:
-            sentiment_dict['neutral'].append(result['word'])
+            sentiment_dict['neutral'].append(result['label'])
 
     return sentiment_dict
 
@@ -55,13 +63,15 @@ def main():
         if submit_button:
             with col1:
                 st.info("Results")
-                sentiment = sentiment_analyzer(raw_text)[0]
+                #sentiment = sentiment_analyzer(raw_text)[0]
+                sentiment = [sentiment_analyzer(raw_text)[0]]
+                ###
                 st.write(sentiment)
 
                 # Emoji
-                if sentiment['label'] == 'POSITIVE':
+                if sentiment[0]['label'] == 'POSITIVE':
                     st.markdown("Sentiment: Positive :smiley: ")
-                elif sentiment['label'] == 'NEGATIVE':
+                elif sentiment[0]['label'] == 'NEGATIVE':
                     st.markdown("Sentiment: Negative :angry: ")
                 else:
                     st.markdown("Sentiment: Neutral 😐 ")
